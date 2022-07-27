@@ -42,6 +42,10 @@
                     </ul>
     
                     <button class="button-choose pure-button" id="btn-compact">Choose</button>
+                    <img src="/loading.gif" class="hidden button-choose" id="loading-compact" alt="loading">
+                    <p class="hidden" id="msg-compact">
+                        Put some result message here.
+                    </p>
                 </div>
             </div>
 
@@ -98,16 +102,17 @@
                     </ul>
     
                     <button class="button-choose pure-button" id="btn-long">Choose</button>
+                    <img src="/loading.gif" class="hidden button-choose" id="loading-long" alt="loading">
+                    <p class="hidden" id="msg-long">
+                        Put some result message here.
+                    </p>
                 </div>
             </div>
             
             <div class="notes pure-u-1">
-                <p>Notes</p>
                 <p>
                     This is a poll to identify preferred indentation styles. Please choose your
                     preferred styles out of the two choices.
-                </p>
-                <p>
                     Both of the choices are valid JSON code. The positions of the two choices,
                     as in, which appears first or on the left, has been randomized to reduce
                     bias based on position.
@@ -117,23 +122,86 @@
     </div>
 </body>
 <script>
-const btn_long = document.getElementById("btn-long");
-const table_elem = document.getElementById("table-01");
+const btnLong = document.getElementById("btn-long");
+const btnCompact = document.getElementById("btn-compact");
+
+const loadingLong = document.getElementById("loading-long");
+const loadingCompact = document.getElementById("loading-compact");
+
+const msgLong = document.getElementById("msg-long");
+const msgCompact = document.getElementById("msg-compact");
+
+const tableElem = document.getElementById("table-01");
 
 /**
  * Can randomly swap the positions of the two choices
  * in case there is a bias based on position 
  */
-const swap_positions = function() {
-    table_elem.insertAdjacentElement(
+const swapPositions = function() {
+    tableElem.insertAdjacentElement(
         "afterbegin",
-        table_elem.children[1]
+        tableElem.children[1]
     );
 };
 
 if (Math.random() <= 0.5) {
-    swap_positions();
+    swapPositions();
 }
+
+const submitAnswer = function(url, success, err) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.timeout = 1000;
+    xhr.responseType = "json";
+    xhr.onload = function() {
+        if (xhr.status == 200 && xhr.response.vote != null) {
+            success(xhr);
+        } else {
+            err(xhr);
+        }
+    };
+    xhr.ontimeout = function() {
+        err(xhr);
+    }
+    xhr.send();
+};
+
+const showLoadingSpinner = function(loaderRef) {
+    btnLong.classList.add("hidden");
+    btnCompact.classList.add("hidden");
+    loaderRef.classList.remove("hidden");
+}
+
+const showOutput = function(outputRef, outputMessage) {
+    loadingLong.classList.add("hidden");
+    loadingCompact.classList.add("hidden");
+    outputRef.textContent = outputMessage;
+    outputRef.classList.remove("hidden");
+}
+
+const clickHandler = function(url, loaderRef, msgRef) {
+    return function() {
+        showLoadingSpinner(loaderRef);
+        const good = function(xhr) {
+            const msg = `Thanks for voting:\n${xhr.response.vote}`;
+            showOutput(msgRef, msg);
+        };
+        const bad = function(xhr) {
+            const errDetail = xhr.status != 200 ? xhr.statusText : xhr.response.error;
+            const msg = `ERROR please refresh and try again:\n${errDetail}`;
+            showOutput(msgRef, msg);
+        };
+        window.setTimeout(
+            function() {
+                submitAnswer(url, good, bad)
+            },
+            300
+        );
+    };
+};
+
+btnCompact.onclick = clickHandler("/dummy-good.json", loadingCompact, msgCompact);
+btnLong.onclick = clickHandler("/dummy-error.json", loadingLong, msgLong);
 
 </script>
 </html>
