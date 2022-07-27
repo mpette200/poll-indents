@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Vote for preferred indentation style">
+    <title>Indent Styles</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@2.1.0/build/base-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@2.1.0/build/pure-min.css"
+        integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@2.1.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="l-content">
+        <div class="dt-tables pure-g" id="table-01">
+            <div class="pure-u-1 pure-u-lg-1-2">
+                <div class="dt-table">
+                    <div class="dt-table-header">
+                        <h2>Compact</h2>
+                    </div>
+    
+                    <ul class="dt-table-list">
+                        <li><code>
+<pre>{"type": "record",
+ "name": "TreeNode",
+ "fields":
+  [
+    {"type":
+      {"type": "enum",
+       "name": "column_names",
+       "symbols": ["x0", "x1", "x2", "x3"]},
+     "name": "field"},
+   {"type": "string", "name": "operator"},
+   {"type": "double", "name": "value"},
+    {"type": ["TreeNode", "double"],
+     "name": "pass"},
+    {"type": ["TreeNode", "double"],
+     "name": "fail"}]}</pre>
+                        </code></li>
+                    </ul>
+    
+                    <button class="button-choose pure-button" id="btn-compact">Choose</button>
+                </div>
+            </div>
+
+            <div class="pure-u-1 pure-u-lg-1-2">
+                <div class="dt-table">
+                    <div class="dt-table-header">
+                        <h2>Long</h2>
+                    </div>
+    
+                    <ul class="dt-table-list">
+                        <li><code>
+<pre>{
+    "type": "record",
+    "name": "TreeNode",
+    "fields": [
+        {
+            "type": {
+                "type": "enum",
+                "name": "column_names",
+                "symbols": [
+                    "x0",
+                    "x1",
+                    "x2",
+                    "x3"
+                ]
+            },
+            "name": "field"
+        },
+        {
+            "type": "string",
+            "name": "operator"
+        },
+        {
+            "type": "double",
+            "name": "value"
+        },
+        {
+            "type": [
+                "TreeNode",
+                "double"
+            ],
+            "name": "pass"
+        },
+        {
+            "type": [
+                "TreeNode",
+                "double"
+            ],
+            "name": "fail"
+        }
+    ]
+}</pre>
+                        </code></li>
+                    </ul>
+    
+                    <button class="button-choose pure-button" id="btn-long">Choose</button>
+                </div>
+            </div>
+            
+            <div class="notes pure-u-1">
+                <p>Notes</p>
+                <p>
+                    This is a poll to identify preferred indentation styles. Please choose your
+                    preferred styles out of the two choices.
+                </p>
+                <p>
+                    Both of the choices are valid JSON code. The positions of the two choices,
+                    as in, which appears first or on the left, has been randomized to reduce
+                    bias based on position.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+const btn_long = document.getElementById("btn-long");
+const table_elem = document.getElementById("table-01");
+
+/**
+ * Can randomly swap the positions of the two choices
+ * in case there is a bias based on position 
+ */
+const swap_positions = function() {
+    table_elem.insertAdjacentElement(
+        "afterbegin",
+        table_elem.children[1]
+    );
+};
+
+if (Math.random() <= 0.5) {
+    swap_positions();
+}
+
+</script>
+</html>

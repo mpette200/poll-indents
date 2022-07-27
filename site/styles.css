@@ -1,0 +1,109 @@
+
+  /*
+   * Mostly based on:
+   * https://github.com/pure-css/pure/tree/master/site/static/layouts/pricing
+   */
+  .l-content {
+    margin: 0 auto;
+  }
+  
+  .l-box {
+    padding: 0.5em 2em;
+  }
+  
+  .pure-menu {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pure-menu-link {
+    padding: 0.5em 0.7em;
+  }
+
+  code pre {
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+    font-size: 12px;
+    display: block;
+    overflow-x: scroll;
+  }
+
+  .dt-tables,
+  .information {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .dt-tables {
+    margin-bottom: 3.125em;
+    text-align: center;
+  }
+  
+  .dt-table {
+    border: 1px solid #ddd;
+    margin: 0 0.5em 2em;
+    padding: 0 0 3em;
+  }
+  
+  .dt-table-header {
+    background: #2c4985;
+    color: #fff;
+  }
+  
+  .dt-table-header h2 {
+    margin: 0.1em 0em;
+    padding: 0.2em 0em;
+    font-size: 2em;
+    font-weight: 100;
+  }
+  
+  .dt-table-name span {
+    display: block;
+    text-transform: uppercase;
+    font-size: 0.2em;
+    padding-bottom: 1.5em;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    *color: #fff;
+  }
+  
+  .dt-table-list {
+    list-style-type: none;
+    margin: 0em;
+    padding: 0em;
+    text-align: left;
+  }
+  
+  .dt-table-list li {
+    padding: 0.8em 0.8em;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e7e7e7;
+  }
+
+  .dt-tables .notes {
+    padding: 0em 0.8em;
+    text-align: left;
+  }
+  
+  .button-choose {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    border-radius: 2em;
+    font-weight: bold;
+    position: relative;
+    bottom: -1.5em;
+  }
+  
+  .information-head {
+    color: black;
+    font-weight: 500;
+  }
+  
+  .footer {
+    background: #111;
+    color: #888;
+    text-align: center;
+  }
+  .footer a {
+    color: #ddd;
+  }
+  
