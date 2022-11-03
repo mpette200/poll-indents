@@ -193,15 +193,35 @@ const clickHandler = function(url, loaderRef, msgRef) {
         };
         window.setTimeout(
             function() {
-                submitAnswer(url, good, bad)
+                submitAnswer(url, good, bad);
             },
             300
         );
     };
 };
 
-btnCompact.onclick = clickHandler("/dummy-good.json", loadingCompact, msgCompact);
-btnLong.onclick = clickHandler("/dummy-error.json", loadingLong, msgLong);
+/**
+ * Randomly choose between a valid URL or an error generating URL.
+ */
+const getTestUrl = function(vote) {
+    if (Math.random() <= 0.4) {
+        return "/dummy-error.json";
+    } else if (Math.random() <= 0.5) {
+        return "/dummy-NOTEXISTS.json";
+    } else {
+        if (vote == "COMPACT") {
+            return "/dummy-compact.json";
+        } else if (vote == "LONG") {
+            return "/dummy-long.json";
+        } else {
+            throw new TypeError(`invalid vote: ${vote}`);
+        }
+    }
+};
+
+// NOTE: change this for UI testing
+btnCompact.onclick = clickHandler(getTestUrl("COMPACT"), loadingCompact, msgCompact);
+btnLong.onclick = clickHandler(getTestUrl("LONG"), loadingLong, msgLong);
 
 </script>
 </html>
