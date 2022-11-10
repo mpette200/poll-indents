@@ -144,17 +144,66 @@ const swapPositions = function() {
     );
 };
 
+var swapped = false;
 if (Math.random() <= 0.5) {
     swapPositions();
+    swapped = true;
 }
 
-const submitAnswer = function(url, success, err) {
+// NOTE: change this for UI testing
+const TEST_MODE = false;
+const BACKEND_URL = "https://indents-backend-l4g3lfr3kq-nw.a.run.app";
+
+/**
+ * Prepare body of request and url
+ */
+const prepareRequest = function(vote) {
+    var vote_name;
+    if (vote == "COMPACT") {
+        vote_name = "Vote_compact";
+    } else if (vote == "LONG") {
+        vote_name = "Vote_long";
+    } else {
+        throw new TypeError(`invalid vote: ${vote}`);
+    }
+
+    var url;
+    if (TEST_MODE) {
+        if (Math.random() <= 0.4) {
+            url = "/dummy-error.json";
+        } else if (Math.random() <= 0.5) {
+            url = "/dummy-NOTEXISTS.json";
+        } else {
+            if (vote == "COMPACT") {
+                url = "/dummy-compact.json";
+            } else if (vote == "LONG") {
+                url = "/dummy-long.json";
+            }
+        }
+    } else {
+        url = BACKEND_URL;
+    }
+    const body = {
+        function: "vote",
+        args: {
+            voted_for: vote_name,
+            layout_seen: swapped ? "L_first" : "C_first",
+            screen_dims: `${window.screen.width} x ${window.screen.height}`
+        }
+    };
+    return [body, url];
+}
+
+const submitAnswer = function(vote, success, err) {
+    const [body, url] = prepareRequest(vote);
+    const method = TEST_MODE ? "GET" : "POST";
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.timeout = 1000;
+    xhr.open(method, url);
+    xhr.timeout = 4000;
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.responseType = "json";
     xhr.onload = function() {
-        if (xhr.status == 200 && xhr.response.vote != null) {
+        if (xhr.status == 200) {
             success(xhr);
         } else {
             err(xhr);
@@ -163,7 +212,10 @@ const submitAnswer = function(url, success, err) {
     xhr.ontimeout = function() {
         err(xhr);
     }
-    xhr.send();
+    xhr.onerror = function() {
+        err(xhr);
+    }
+    xhr.send(JSON.stringify(body));
 };
 
 const showLoadingSpinner = function(loaderRef) {
@@ -179,49 +231,29 @@ const showOutput = function(outputRef, outputMessage) {
     outputRef.classList.remove("hidden");
 }
 
-const clickHandler = function(url, loaderRef, msgRef) {
+const clickHandler = function(vote, loaderRef, msgRef) {
     return function() {
         showLoadingSpinner(loaderRef);
         const good = function(xhr) {
-            const msg = `Thanks for voting:\n${xhr.response.vote}`;
+            const msg = `Thanks for voting:\n${JSON.stringify(xhr.response)}`;
             showOutput(msgRef, msg);
         };
         const bad = function(xhr) {
-            const errDetail = xhr.status != 200 ? xhr.statusText : xhr.response.error;
+            const errDetail = `status: ${xhr.status} response: ${JSON.stringify(xhr.response)}`;
             const msg = `ERROR please refresh and try again:\n${errDetail}`;
             showOutput(msgRef, msg);
         };
         window.setTimeout(
             function() {
-                submitAnswer(url, good, bad);
+                submitAnswer(vote, good, bad);
             },
-            300
+            50
         );
     };
 };
 
-/**
- * Randomly choose between a valid URL or an error generating URL.
- */
-const getTestUrl = function(vote) {
-    if (Math.random() <= 0.4) {
-        return "/dummy-error.json";
-    } else if (Math.random() <= 0.5) {
-        return "/dummy-NOTEXISTS.json";
-    } else {
-        if (vote == "COMPACT") {
-            return "/dummy-compact.json";
-        } else if (vote == "LONG") {
-            return "/dummy-long.json";
-        } else {
-            throw new TypeError(`invalid vote: ${vote}`);
-        }
-    }
-};
-
-// NOTE: change this for UI testing
-btnCompact.onclick = clickHandler(getTestUrl("COMPACT"), loadingCompact, msgCompact);
-btnLong.onclick = clickHandler(getTestUrl("LONG"), loadingLong, msgLong);
+btnCompact.onclick = clickHandler("COMPACT", loadingCompact, msgCompact);
+btnLong.onclick = clickHandler("LONG", loadingLong, msgLong);
 
 </script>
 </html>
