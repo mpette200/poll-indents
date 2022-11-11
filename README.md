@@ -82,8 +82,3 @@ gcloud iam workload-identity-pools providers describe "${PROVIDER_NAME}" \
   --format="value(name)"
 
 ```
-
-This is the workload_identity_provider to use
-```
-projects/719891393859/locations/global/workloadIdentityPools/github-pool-02/providers/github-token-provider-02
-```

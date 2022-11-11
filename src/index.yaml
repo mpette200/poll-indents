@@ -1,2 +1,8 @@
 indexes:
 
+- kind: Vote
+  properties:
+  - name: voted_for
+    direction: asc
+  - name: timestamp
+    direction: desc

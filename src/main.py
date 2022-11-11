@@ -138,18 +138,19 @@ class NewVote:
         assert self.layout_seen in NewVote.VALID_LAYOUTS
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Vote:
     """
     Immutable voting data including unique id and timestamp.
     """
     key: tuple[str, int]
+    voted_for: str
     layout_seen: str
     screen_dims: str
     timestamp: datetime
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class CountVotes:
     """
     Immutable count of total votes
@@ -165,11 +166,28 @@ class DataModel:
     Datamodel that connects to google-cloud-datastore database
     """
     PROJECT = "mp-indents-01"
+    VOTE_KEY = "Vote"
     TOTAL_KEY = ("Votes", "totals")
 
     def __init__(self) -> None:
         self.client = datastore.Client(project=DataModel.PROJECT)
         self.totals_key = self.client.key(*DataModel.TOTAL_KEY)
+
+    def initial_count_exists(self) -> bool:
+        """
+        Check if the totals record already exists.
+        """
+        totals = self.client.get(self.totals_key, timeout=5)
+        return totals is not None and all(
+            f.name in totals and totals[f.name] >= 0
+            for f in fields(CountVotes))
+
+    def get_raw_totals(self) -> str:
+        """
+        Return totals record directly from database. 
+        """
+        totals = self.client.get(self.totals_key, timeout=5)
+        return str(totals)
 
     def create_initial_count(self) -> str:
         """
@@ -189,8 +207,7 @@ class DataModel:
         # prepare data outside transaction for performance
         vote.validate()
         data = asdict(vote)
-        del data["voted_for"]
-        partial_key = self.client.key(vote.voted_for, parent=self.totals_key)
+        partial_key = self.client.key(DataModel.VOTE_KEY, parent=self.totals_key)
         record = datastore.Entity(partial_key)
         record.update(data)
         timestamp = datetime.now(timezone.utc)
@@ -205,7 +222,7 @@ class DataModel:
             raise ValueError(f"invalid voted_for: {vote.voted_for}")
 
         with self.client.transaction():
-            totals = self.client.get(self.totals_key)
+            totals = self.client.get(self.totals_key, timeout=5)
             totals[name] += 1
             # need a transaction, not enough to use put_multi()
             self.client.put_multi([record, totals], timeout=5)
@@ -220,7 +237,7 @@ class DataModel:
         """
         Return count of the votes
         """
-        totals = self.client.get(self.totals_key)
+        totals = self.client.get(self.totals_key, timeout=5)
         return CountVotes(
             count_vote_compact=totals[CountVotes.COMPACT],
             count_vote_long=totals[CountVotes.LONG]
