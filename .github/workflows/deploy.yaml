@@ -12,6 +12,7 @@ jobs:
       WORKLOAD_ID_PROVIDER: 'projects/719891393859/locations/global/workloadIdentityPools/github-pool-02/providers/github-token-provider-02'
       PROJECT_ID: mp-indents-01
       SERVICE_ACCOUNT_NAME: github-service-02
+      RUNTIME_ACCOUNT: functions-runtime-02
       SRC_FOLDER: src
       VERSION_FILE: src/python-version.txt
       REQUIREMENTS_FILE: src/requirements.txt
@@ -62,5 +63,5 @@ jobs:
         --serve-all-traffic-latest-revision \
         --timeout=10s \
         --max-instances=1 \
-        --run-service-account="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
-        --service-account="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+        --run-service-account="${RUNTIME_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+        --service-account="${RUNTIME_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com"
